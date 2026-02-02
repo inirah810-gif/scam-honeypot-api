@@ -1,31 +1,16 @@
-from fastapi import FastAPI
-from pydantic import BaseModel
-from datetime import datetime
+from fastapi import FastAPI, Header, Body
+from typing import Optional
 
-app = FastAPI(title="Agentic Scam Honeypot")
+app = FastAPI()
 
-class ScamInput(BaseModel):
-    phone: str
-    message: str
-
-@app.get("/")
-def root():
-    return {"status": "Honeypot is live"}
-
-@app.post("/honeypot/message")
-def honeypot(data: ScamInput):
-    text = data.message.lower()
-
-    scam_type = "unknown"
-    if "otp" in text:
-        scam_type = "OTP scam"
-    elif "loan" in text:
-        scam_type = "Loan scam"
-    elif "prize" in text or "won" in text:
-        scam_type = "Prize scam"
-
+@app.post("/interact")
+async def interact(
+    x_api_key: Optional[str] = Header(None),
+    data: Optional[dict] = Body(None)
+):
     return {
-        "reply": "Please wait, our agent will verify your details.",
-        "scam_type": scam_type,
-        "received_at": datetime.utcnow()
+        "status": "Honeypot is live",
+        "received": data
     }
+
+       
