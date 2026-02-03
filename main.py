@@ -1,22 +1,24 @@
-from fastapi import FastAPI, Header, Body
-from typing import Optional
+from fastapi import FastAPI, Header, Request
 from datetime import datetime
 
 app = FastAPI()
 
 @app.post("/interact")
-async def interact(
-    payload: Optional[dict] = Body(default={}),
-    x_api_key: Optional[str] = Header(None)
-):
+async def interact(request: Request, x_api_key: str = Header(default="")):
+    try:
+        body = await request.json()
+    except:
+        body = {}
+
     return {
-        "status": "ok",
-        "honeypot": "active",
-        "authenticated": True if x_api_key else False,
-        "received_body": payload,
-        "timestamp": datetime.utcnow().isoformat()
+        "status": "Honeypot is live",
+        "ok": True,
+        "api_key_received": bool(x_api_key),
+        "body": body,
+        "time": datetime.utcnow().isoformat()
     }
 
 @app.get("/")
 def root():
     return {"status": "alive"}
+
