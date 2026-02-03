@@ -1,24 +1,27 @@
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Query
+from datetime import datetime
 
 app = FastAPI()
 
 @app.get("/")
-async def root():
+def root():
     return {"status": "Honeypot is live"}
 
-@app.api_route("/interact", methods=["GET", "POST"])
-async def interact(request: Request):
-    try:
-        data = await request.json()
-    except:
-        data = {}
-
-    if not data:
+@app.get("/interact")
+def interact(
+    phone: str = Query(None),
+    message: str = Query(None)
+):
+    # If tester sends empty request
+    if not phone or not message:
         return {
-            "status": "Honeypot is live"
+            "status": "Honeypot is live",
+            "note": "Waiting for attacker input"
         }
 
     return {
-        "status": "Honeypot received data",
-        "data": data
+        "phone": phone,
+        "received_message": message,
+        "ai_reply": "Please wait, I am verifying your details.",
+        "time": datetime.utcnow().isoformat()
     }
