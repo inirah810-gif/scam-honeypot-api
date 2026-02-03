@@ -71,14 +71,14 @@ async def interact(
     conversation_memory[phone] += 1
     step = conversation_memory[phone]
 
-   if step == 1:
-    reply = generate_scam_reply("initial")
-elif step == 2:
-    reply = generate_scam_reply("middle")
-elif step == 3:
-    reply = generate_scam_reply("advanced")
-else:
-    reply = generate_scam_reply("end")
+    if step == 1:
+        reply = generate_scam_reply("initial")
+    elif step == 2:
+        reply = generate_scam_reply("middle")
+    elif step == 3:
+        reply = generate_scam_reply("advanced")
+    else:
+        reply = generate_scam_reply("end")
 
     return {
         "phone": phone,
