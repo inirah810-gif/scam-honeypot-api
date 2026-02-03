@@ -1,18 +1,13 @@
-from fastapi import FastAPI, Header
-from pydantic import BaseModel
+from fastapi import FastAPI, Header, Body
 from typing import Optional
 from datetime import datetime
 
 app = FastAPI()
 
-class MessageRequest(BaseModel):
-    phone: str
-    message: str
-
 conversation_memory = {}
 
 def detect_scam_type(message: str):
-    msg = message.lower()
+    msg = (message or "").lower()
     if "otp" in msg:
         return "OTP scam"
     if "won" in msg or "prize" in msg:
@@ -47,11 +42,18 @@ def ai_reply(scam_type: str):
 
 @app.post("/interact")
 async def interact(
-    data: MessageRequest,
+    data: Optional[dict] = Body(None),
     x_api_key: Optional[str] = Header(None)
 ):
-    phone = data.phone
-    message = data.message
+    # if platform sends empty body
+    if not data:
+        return {"status": "Honeypot is live"}
+
+    phone = data.get("phone")
+    message = data.get("message")
+
+    if not phone or not message:
+        return {"error": "phone and message required"}
 
     scam_type = detect_scam_type(message)
 
