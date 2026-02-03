@@ -1,10 +1,14 @@
 from fastapi import FastAPI, Header
+from pydantic import BaseModel
 from typing import Optional
 from datetime import datetime
 
 app = FastAPI()
 
-# simple in-memory storage
+class MessageRequest(BaseModel):
+    phone: str
+    message: str
+
 conversation_memory = {}
 
 def detect_scam_type(message: str):
@@ -43,12 +47,11 @@ def ai_reply(scam_type: str):
 
 @app.post("/interact")
 async def interact(
-    phone: Optional[str] = None,
-    message: Optional[str] = None,
+    data: MessageRequest,
     x_api_key: Optional[str] = Header(None)
 ):
-    if not phone or not message:
-        return {"error": "phone and message are required"}
+    phone = data.phone
+    message = data.message
 
     scam_type = detect_scam_type(message)
 
