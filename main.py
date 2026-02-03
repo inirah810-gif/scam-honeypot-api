@@ -39,6 +39,14 @@ def ai_reply(scam_type: str):
         ]
     }
     return replies.get(scam_type, ["Please wait..."])[0]
+def generate_scam_reply(stage: str):
+    replies = {
+        "initial": "Sorry sir, konjam clear ah sollunga.",
+        "middle": "Bank change aachunu message vandhuchu, idhu related ah?",
+        "advanced": "Neenga endha department sir? Cyber cell verification ah?",
+        "end": "Conversation logged. Cyber crime team notified."
+    }
+    return replies.get(stage, "Please explain again.")
 
 @app.post("/interact")
 async def interact(
@@ -63,14 +71,14 @@ async def interact(
     conversation_memory[phone] += 1
     step = conversation_memory[phone]
 
-    if step == 1:
-        reply = ai_reply(scam_type)
-    elif step == 2:
-        reply = "I’m a bit confused. Can you explain once again?"
-    elif step == 3:
-        reply = "Before sharing anything, can you confirm your official ID?"
-    else:
-        reply = "Please wait, I’m checking with my bank."
+   if step == 1:
+    reply = generate_scam_reply("initial")
+elif step == 2:
+    reply = generate_scam_reply("middle")
+elif step == 3:
+    reply = generate_scam_reply("advanced")
+else:
+    reply = generate_scam_reply("end")
 
     return {
         "phone": phone,
