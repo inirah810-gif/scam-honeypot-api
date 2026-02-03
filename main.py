@@ -55,8 +55,11 @@ async def interact(
 ):
     # if platform sends empty body
     if not data:
-        return {"status": "Honeypot is live
-        "note": "NO rewuest body recieved"}
+     return {
+    "status": "Honeypot is live",
+    "note": "Empty or invalid request body handled safely"
+}
+   
     phone = data.get("phone") or data.get("from") or "unknown"
     message = data.get("message") or data.get("text") or ""
 
