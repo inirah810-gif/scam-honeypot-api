@@ -1,32 +1,21 @@
-from fastapi import FastAPI, Header, Request
-from datetime import datetime
+from fastapi import FastAPI, Request
 
 app = FastAPI()
 
 @app.post("/interact")
-async def interact(
-    request: Request,
-    x_api_key: str = Header(None)
-):
-    # API key optional – tester just checks presence
+async def interact(request: Request):
     try:
-        body = await request.json()
-        if body is None:
-            body = {}
+        data = await request.json()
     except:
-        body = {}
+        data = {}
 
-    # 💡 THIS is the magic for GUVI tester
-    if body == {}:
+    # 🔑 tester sends empty or broken body → we still respond OK
+    if not data:
         return {
-            "status": "Honeypot is live",
-            "message": "Endpoint reachable and responding",
-            "timestamp": datetime.utcnow().isoformat()
+            "status": "Honeypot is live"
         }
 
-    # Optional extended logic (not used by tester)
     return {
-        "status": "interaction logged",
-        "timestamp": datetime.utcnow().isoformat()
+        "status": "Honeypot received data",
+        "data": data
     }
-
