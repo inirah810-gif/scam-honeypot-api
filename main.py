@@ -1,27 +1,21 @@
-from fastapi import FastAPI, Query
+from fastapi import FastAPI, Header
 from datetime import datetime
 
 app = FastAPI()
 
 @app.get("/")
 def root():
-    return {"status": "Honeypot is live"}
+    return {"status": "ok"}
 
 @app.get("/interact")
-def interact(
-    phone: str = Query(None),
-    message: str = Query(None)
-):
-    # If tester sends empty request
-    if not phone or not message:
-        return {
-            "status": "Honeypot is live",
-            "note": "Waiting for attacker input"
-        }
+def interact(x_api_key: str = Header(None)):
+    # required header check
+    if not x_api_key:
+        return {"error": "missing api key"}
 
     return {
-        "phone": phone,
-        "received_message": message,
-        "ai_reply": "Please wait, I am verifying your details.",
-        "time": datetime.utcnow().isoformat()
+        "status": "success",
+        "message": "Honeypot active",
+        "reply": "Please wait, I am verifying your details.",
+        "timestamp": datetime.utcnow().isoformat()
     }
